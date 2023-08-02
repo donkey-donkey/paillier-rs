@@ -85,6 +85,24 @@ impl EncryptionKey {
         Some((c, r))
     }
 
+    /// Encrypt a given message with the encryption key and a provided random value
+    /// m can be greater than N
+    pub fn encrypt_unchecked(&self, m: &BigNumber, r: &Nonce) -> Ciphertext {
+        debug_assert!(mod_in(r, &self.n));
+
+        // g^m mod N^2 = (N + 1)^m mod N^2 = m N + 1 mod N^2
+        // See Prop 11.26, Pg. 385 of Intro to Modern Cryptography
+        let g_m = m
+            .modmul(&self.n, &self.nn)
+            .modadd(&BigNumber::one(), &self.nn);
+
+        // r^N mod N^2
+        let r_n = &r.modpow(&self.n, &self.nn);
+
+        // c = g^m r^n mod N^2
+        g_m.modmul(r_n, &self.nn)
+    }
+
     /// Combines two Paillier ciphertexts
     /// commonly denoted in text as c1 \bigoplus c2
     pub fn add(&self, c1: &Ciphertext, c2: &Ciphertext) -> Option<Ciphertext> {
