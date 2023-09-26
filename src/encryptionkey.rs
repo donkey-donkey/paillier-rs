@@ -1,5 +1,7 @@
+use alloc::string::String;
+//use alloc::vec::Vec;
 use crate::{mod_in, Ciphertext, DecryptionKey, Nonce};
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
+//#use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use unknown_order::BigNumber;
 use zeroize::Zeroize;
 
@@ -12,7 +14,7 @@ pub struct EncryptionKey {
 
 #[cfg(feature = "wasm")]
 wasm_slice_impl!(EncryptionKey);
-
+/*
 impl Serialize for EncryptionKey {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -30,7 +32,7 @@ impl<'de> Deserialize<'de> for EncryptionKey {
         let n = BigNumber::deserialize(deserializer)?;
         Ok(Self::from_n(n))
     }
-}
+}*/
 
 impl From<&DecryptionKey> for EncryptionKey {
     fn from(sk: &DecryptionKey) -> EncryptionKey {
@@ -129,9 +131,11 @@ impl EncryptionKey {
     }
 
     /// Get this key's byte representation
-    pub fn to_bytes(&self) -> Vec<u8> {
+   /*pub fn to_bytes(&self) -> Vec<u8> {
         self.n.to_bytes()
     }
+
+    */
 
     /// Convert a  byte representation to a encryption key
     pub fn from_bytes<B: AsRef<[u8]>>(data: B) -> Result<Self, String> {

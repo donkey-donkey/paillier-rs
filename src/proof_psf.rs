@@ -1,9 +1,12 @@
-use crate::{mod_in, DecryptionKey, EncryptionKey};
+//use alloc::string::{String, ToString};
+//use alloc::vec;
+use alloc::vec::Vec;
+use crate::{mod_in, DecryptionKey, EncryptionKey, };
 use digest::{
     generic_array::{typenum::Unsigned, GenericArray},
     Digest,
 };
-use serde::{Deserialize, Serialize};
+//use serde::{Deserialize, Serialize};
 use unknown_order::BigNumber;
 
 /// Proof that a Paillier modulus is square free.
@@ -19,7 +22,8 @@ use unknown_order::BigNumber;
 /// This proof is used in <https://eprint.iacr.org/2020/540> and
 /// <https://eprint.iacr.org/2017/552> as part of their DKG.
 /// A paillier key generator can prove the parameters where created honestly.
-#[derive(Clone, Debug, Deserialize, Serialize)]
+//#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug)]
 pub struct ProofSquareFree(Vec<BigNumber>);
 
 const L: usize = 13;
@@ -57,17 +61,28 @@ impl ProofSquareFree {
             .all(|(a, b)| a == &b.modpow(&pk.n, &pk.n))
     }
 
-    /// Get this proof's byte representation
+ /*   /// Get this proof's byte representation
     pub fn to_bytes(&self) -> Vec<u8> {
-        serde_bare::to_vec(&self.0).unwrap()
+
+        //serde_json_core::to_vec(&self.0).unwrap()
+
+        let mut buffer = vec![0u8; INITIAL_BUFFER_SIZE];
+
+        // Try to serialize the structure into the buffer
+        let bytes_written = serde_json_core::to_slice(&self.0, &mut buffer)
+            .expect("Failed to serialize bytes"); // Handle error as appropriate for your use case
+
+        // Resize the buffer to match the actual number of bytes written
+        buffer.truncate(bytes_written);
+        return buffer;
     }
 
     /// Convert a byte representation to a proof
     pub fn from_bytes<B: AsRef<[u8]>>(data: B) -> Result<Self, String> {
         let data = data.as_ref();
-        let messages = serde_bare::from_slice::<Vec<BigNumber>>(data).map_err(|e| e.to_string())?;
+        let (messages, _) = serde_json_core::from_slice::<Vec<BigNumber>>(data).map_err(|e| e.to_string())?;
         Ok(Self(messages))
-    }
+    }*/
 }
 
 /// Computes `l` deterministic numbers as challenges

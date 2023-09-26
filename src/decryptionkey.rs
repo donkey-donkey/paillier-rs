@@ -1,10 +1,14 @@
+//use alloc::string::{String, ToString};
+//use alloc::vec;
+use alloc::vec::Vec;
 use crate::{mod_in, Ciphertext, EncryptionKey};
-use serde::{Deserialize, Serialize};
+//use serde::{Deserialize, Serialize};
 use unknown_order::BigNumber;
 use zeroize::Zeroize;
 
 /// A Paillier decryption key
-#[derive(Clone, Debug, Deserialize, Serialize, Zeroize)]
+//#[derive(Clone, Debug, Deserialize, Serialize, Zeroize)]
+#[derive(Clone, Debug,  Zeroize)]
 #[zeroize(drop)]
 pub struct DecryptionKey {
     pub(crate) pk: EncryptionKey,
@@ -90,7 +94,8 @@ impl DecryptionKey {
         })
     }
 
-    /// Get this key's byte representation.
+    // todo gotta fix this
+/*    /// Get this key's byte representation.
     ///
     /// This measures about (n * 4) + 4 bytes or i.e.
     /// for a 2048 bit modulus == 1032 bytes.
@@ -101,14 +106,23 @@ impl DecryptionKey {
             totient: self.totient.to_bytes(),
             u: self.u.to_bytes(),
         };
-        serde_bare::to_vec(&bytes).unwrap()
+        //serde_bare::to_vec(&bytes).unwrap()
+        let mut buffer = vec![0u8; INITIAL_BUFFER_SIZE];
+
+        // Try to serialize the structure into the buffer
+        let bytes_written = serde_json_core::to_slice::<DecryptionKeyBytes>(&bytes, &mut buffer)
+            .expect("Failed to serialize bytes"); // Handle error as appropriate for your use case
+
+        // Resize the buffer to match the actual number of bytes written
+        buffer.truncate(bytes_written);
+        return buffer;
     }
 
     /// Convert a byte representation to a decryption key
     pub fn from_bytes<B: AsRef<[u8]>>(data: B) -> Result<Self, String> {
         let data = data.as_ref();
-        let bytes =
-            serde_bare::from_slice::<DecryptionKeyBytes>(data).map_err(|e| e.to_string())?;
+        let (bytes,_) =
+            serde_json_core::from_slice::<DecryptionKeyBytes>(data).map_err(|e| e.to_string())?;
         let pk = EncryptionKey::from_bytes(bytes.n.as_slice())?;
         Ok(Self {
             pk,
@@ -116,7 +130,7 @@ impl DecryptionKey {
             totient: BigNumber::from_slice(bytes.totient.as_slice()),
             u: BigNumber::from_slice(bytes.u.as_slice()),
         })
-    }
+    }*/
 
     /// The Paillier modulus
     pub fn n(&self) -> &BigNumber {
@@ -139,10 +153,11 @@ impl DecryptionKey {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+/*//#[derive(Serialize, Deserialize)]
 struct DecryptionKeyBytes {
     n: Vec<u8>,
     lambda: Vec<u8>,
     totient: Vec<u8>,
     u: Vec<u8>,
 }
+*/

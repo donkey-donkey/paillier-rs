@@ -1,3 +1,6 @@
+#![cfg_attr(not(feature = "std"), no_std)]
+//#![no_std]
+
 /*
     Copyright Michael Lodder. All Rights Reserved.
     SPDX-License-Identifier: Apache-2.0
@@ -14,6 +17,8 @@
     trivial_numeric_casts
 )]
 #![cfg_attr(docsrs, feature(doc_cfg))]
+
+extern crate alloc;
 
 #[cfg(feature = "wasm")]
 #[macro_use]
@@ -36,6 +41,9 @@ pub(crate) fn mod_in(a: &BigNumber, n: &BigNumber) -> bool {
 pub type Ciphertext = BigNumber;
 /// A Paillier nonce used during encryption
 pub type Nonce = BigNumber;
+
+/// buffer size for converting to_bytes
+pub const INITIAL_BUFFER_SIZE: usize = 8192;
 
 pub use decryptionkey::*;
 pub use encryptionkey::*;
