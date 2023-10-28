@@ -30,7 +30,7 @@ rand = { version = "0.8", default-features = false, optional = true }
 
 #serde_bare = { version = "0.5", default-features = false, features = ["alloc"] }
 #unknown_order = { version = "0.6.0", default-features = false, features = ["rust"] }
-unknown_order = { path = "../unknown_order", default-features = false} #, features = ["rust"] }
+unknown_order = { path = "../unknown_order", default-features = false, features = ["crypto", "alloc"] }
 
 wasm-bindgen = { version = "0.2", default-features = false, features = ["serde-serialize"], optional = true }
 zeroize = { version = "1.5", features = ["zeroize_derive"] }
