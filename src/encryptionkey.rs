@@ -116,6 +116,19 @@ impl EncryptionKey {
         Some(c1.modmul(c2, &self.nn))
     }
 
+
+    /// Subtracts 2 ciphertexts
+    pub fn sub(&self, c1: &Ciphertext, c2: &Ciphertext) -> Option<Ciphertext> {
+        // constant time check
+        let c1_check = mod_in(&c1, &self.nn);
+        let c2_check = mod_in(&c2, &self.nn);
+        if !c1_check | !c2_check {
+            return None;
+        }
+
+        Some(c1.modmul(&c2.invert( &self.nn).unwrap(), &self.nn))
+    }
+
     /// Equivalent to adding two Paillier exponents
     pub fn mul(&self, c: &Ciphertext, a: &BigNumber) -> Option<Ciphertext> {
         // constant time check
